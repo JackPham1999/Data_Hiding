@@ -118,7 +118,8 @@ def encode(net, optim, cover_path, secret_path):
             output_steg = output.narrow(1, 0, 4 * c.channels_in)
             output_z = output.narrow(1, 4 * c.channels_in, output.shape[1] - 4 * c.channels_in)
             steg_img = iwt(output_steg)
-            torchvision.utils.save_image(steg_img, c.IMAGE_PATH_DEMO_steg + f'{cover_img}_steg_api.png')
+            torchvision.utils.save_image(steg_img, c.IMAGE_PATH_DEMO_API + f'result_steg_image.png')
+            return c.IMAGE_PATH_DEMO_API + f'result_steg_image.png'
             # backward_z = gauss_noise(output_z.shape)
 def decode(net, optim, steg_path):
     net, optim = load_model()
@@ -137,14 +138,16 @@ def decode(net, optim, steg_path):
         #   backward:   #
         #################
         image_tensor = dwt(image_tensor)
-        backward_z_temp = gauss_noise((1, 12, 512, 512))
+        backward_z_temp = gauss_noise((1, 12, 512, 512))#### check lại đoạn này coi có phải do các ép số này mà size ảnh nhr lại
         output_rev = torch.cat((image_tensor.to(device), backward_z_temp), 1)
         bacward_img = net(output_rev, rev=True)
         secret_rev = bacward_img.narrow(1, 4 * c.channels_in, bacward_img.shape[1] - 4 * c.channels_in)
         secret_rev = iwt(secret_rev)
-        # cover_rev = bacward_img.narrow(1, 0, 4 * c.channels_in)
-        # cover_rev = iwt(cover_rev)
-        torchvision.utils.save_image(secret_rev, c.IMAGE_PATH_DEMO_API + f'secret_recover.png')
+        cover_rev = bacward_img.narrow(1, 0, 4 * c.channels_in)
+        cover_rev = iwt(cover_rev)
+        torchvision.utils.save_image(secret_rev, c.IMAGE_PATH_DEMO_API + f'result_secret_recover.png')
+        torchvision.utils.save_image(cover_rev, c.IMAGE_PATH_DEMO_API + f'result_cover_recover.png')
+        return c.IMAGE_PATH_DEMO_API + f'result_secret_recover.png', c.IMAGE_PATH_DEMO_API + f'result_cover_recover.png'
 
 # #encode()
 # decode()

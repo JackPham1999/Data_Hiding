@@ -97,8 +97,8 @@ def encode():
 
     # secret_path = args.secret
     # cover_path = args.cover
-    secret_path = 'image_2/secret/tes2.jpg'
-    cover_path = 'image_2/cover/1-cover.png'
+    secret_path = 'image_2/secret/secret.png'
+    cover_path = 'image_2/cover/cover.png'
     #cover_path = 'image_2/cover/1-cover.png'
     secret_img = secret_path.replace('.png','').split('/')[-1]
     cover_img = cover_path.replace('.png','').split('/')[-1]
@@ -137,18 +137,18 @@ def encode():
             # test_1 = dwt(steg_img)#### best chance
             # test_1_steg = iwt(test_1)
             # test_2 = iwt(steg_img)
-            torchvision.utils.save_image(steg_img, c.IMAGE_PATH_DEMO_steg + f'{cover_img}_steg_3.png')
+            # torchvision.utils.save_image(steg_img, c.IMAGE_PATH_DEMO_steg + f'{cover_img}_steg_3.png')
             backward_z = gauss_noise(output_z.shape)
             # torchvision.utils.save_image(steg_img, c.IMAGE_PATH_DEMO_steg + f'{cover_img}_steg.png')
             # torchvision.utils.save_image(test_1_steg, c.IMAGE_PATH_DEMO_steg + f'{cover_img}_steg_test.png')
 
             # print(test_1==output_steg)
-            image = Image.open(c.IMAGE_PATH_DEMO_steg + f'{cover_img}_steg.png')
-
-            transform = transforms.ToTensor()
-            tensor1 = transform(image)
-            # tensor2 = torch.reshape(tensor1,steg_img.shape)
-            tensor2 = torch.unsqueeze(tensor1,0)
+            # image = Image.open(c.IMAGE_PATH_DEMO_steg + f'{cover_img}_steg.png')
+            #
+            # transform = transforms.ToTensor()
+            # tensor1 = transform(image)
+            # # tensor2 = torch.reshape(tensor1,steg_img.shape)
+            # tensor2 = torch.unsqueeze(tensor1,0)
             # print(test_1 == output)
 
             #################
@@ -156,12 +156,7 @@ def encode():
             #################
             ### có cách nào lấy output_steg t convẻt iwt steg_img
             ### backward_z lấy gauss_noise của shape vậy shape trích xuất từ steg đc khng hay lấy cứng value
-            #output_rev = torch.cat((output_steg, backward_z), 1)
-            # output_rev = torch.cat((dwt(steg_img), backward_z), 1)
-
-            tensor = dwt(tensor2)
-            backward_z_temp = gauss_noise((1,12,512,512))
-            output_rev = torch.cat((tensor.to(device), backward_z_temp), 1)
+            output_rev = torch.cat((output_steg, backward_z), 1)
             bacward_img = net(output_rev, rev=True)
             secret_rev = bacward_img.narrow(1, 4 * c.channels_in, bacward_img.shape[1] - 4 * c.channels_in)
             secret_rev = iwt(secret_rev)
@@ -172,8 +167,9 @@ def encode():
 
             torchvision.utils.save_image(cover, c.IMAGE_PATH_DEMO_cover + f'{cover_img}_cover.png')
             torchvision.utils.save_image(secret, c.IMAGE_PATH_DEMO_secret + f'{secret_img}_secret.png')
-            # torchvision.utils.save_image(steg_img, c.IMAGE_PATH_DEMO_steg + f'{cover_img}_steg.png')
-            torchvision.utils.save_image(secret_rev, c.IMAGE_PATH_DEMO_secret_rev + f'{secret_img}_secret_rev_test_tensor_3.png')
+            torchvision.utils.save_image(steg_img, c.IMAGE_PATH_DEMO_steg + f'{cover_img}_steg.png')
+            torchvision.utils.save_image(secret_rev, c.IMAGE_PATH_DEMO_secret_rev + f'{secret_img}_secret_rev.png')
+            torchvision.utils.save_image(cover_rev, c.IMAGE_PATH_DEMO_secret_rev + f'{secret_img}_cover_rev.png')
 
 def decode():
     net, optim = load_model()

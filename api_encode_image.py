@@ -44,11 +44,11 @@ def main():
             secret_image = request.files['secret']
             cover_image.save(IMAGE_PATH_DEMO_API + 'cover.png')
             secret_image.save(IMAGE_PATH_DEMO_API + 'secret.png')
-            encode(net, optim, IMAGE_PATH_DEMO_API + 'cover.png', IMAGE_PATH_DEMO_API + 'secret.png')
-            return {"response": "file saved successfully in your current durectory"}
+            steg_image = encode(net, optim, IMAGE_PATH_DEMO_API + 'cover.png', IMAGE_PATH_DEMO_API + 'secret.png')
+            return {"response": f"steg image path {steg_image}"}
     except Exception as e:
         return {"error": str(e)}
 
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", debug=False)
+    app.run("0.0.0.0", port=5000,debug=True)
